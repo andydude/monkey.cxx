@@ -19,15 +19,40 @@ public:
   MonkeyAstVisitor();  
 
   virtual antlrcpp::Any visitProgram(MonkeyParser::ProgramContext *ctx) override {
-    return visitChildren(ctx);
+    std::vector<Statement> statements;
+    
+    for (MonkeyParser::StatementContext *sctx : ctx->statement()) {
+      statements.push_back(this->visitStatement(sctx));
+    }
+    return new Program(statements);
   }
 
   virtual antlrcpp::Any visitStatement(MonkeyParser::StatementContext *ctx) override {
-    return visitChildren(ctx);
+    if (ctx->blockStatement()) {
+      return this->visitBlockStatement
+	(ctx->blockStatement());
+    } else if (ctx->letStatement()) {
+      return this->visitLetStatement
+	(ctx->letStatement());
+    } else if (ctx->returnStatement()) {
+      return this->visitReturnStatement
+	(ctx->returnStatement());
+    } else if (ctx->expressionStatement()) {
+      return this->visitExpressionStatement
+	(ctx->expressionStatement());
+    } else {
+      throw "WTF";
+    }
   }
 
   virtual antlrcpp::Any visitBlockStatement(MonkeyParser::BlockStatementContext *ctx) override {
-    return visitChildren(ctx);
+    std::vector<MonkeyParser::StatementContext*> stmt_ctxs = ctx->statement();
+    std::vector<Statement> statements;
+    for (auto stmt_ctx = stmt_ctxs.cbegin();
+	 stmt_ctx != stmt_ctxs.cend(); ++stmt_ctx) {
+      statements.push_back((Statement)this->visitStatement(*stmt_ctx));
+    };
+    return new BlockStatement(statements);
   }
 
   virtual antlrcpp::Any visitExpressionStatement(MonkeyParser::ExpressionStatementContext *ctx) override {

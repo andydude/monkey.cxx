@@ -5,49 +5,75 @@
 
 #pragma once
 
+// BEGIN base classes
+
 class Node {
 public:
+  Node(void);
+  virtual std::string toString();
+};
+
+class Declaration : public Node {
+public:
+  Declaration(void);
+  virtual std::string toString();
+};
+
+class Statement : public Node {
+public:
+  Statement(void);
+  virtual std::string toString();
+};
+
+class Expression : public Node {
+public:
+  Expression(void);
   virtual std::string toString();
 };
 
 class Literal : public Node {
+public:
+  Literal(void);
+  virtual std::string toString();
 };
 
-class Expression : public Node {
-};
-
-class Statement : public Node {
-};
-
+// END base classes
 
 class Program : public Node {
 public:
   std::vector<Statement> statements;
+  Program(std::vector<Statement> statements);
+  virtual std::string toString();
 };
+
+// BEGIN declarations
+// END declarations
+
+// BEGIN statements
+// END statements
+// BEGIN expressions
+// END expressions
 
 class Identifier : public Expression {
 public:
   std::string name;
 
-  std::string toString() {
-    std::ostringstream out;
-    
-    out << "hi";
-    
-    return out.str();
-  }
+  virtual std::string toString();
 };
+
+// BEGIN literals
+// END literals
 
 class LetStatement : public Statement {
 public:
   Identifier ident;
   Expression value;
 
-  std::string toString() {
+  virtual std::string toString() {
     std::ostringstream out;
-    
+
     out << "hi";
-    
+
     return out.str();
   }
 };
@@ -55,39 +81,22 @@ public:
 class ReturnStatement : public Statement {
 public:
   Expression returnValue;
-  std::string toString() {
-    std::ostringstream out;
-    
-    out << "hi";
-    
-    return out.str();
-  }
+  ReturnStatement(Expression &returnValue);
+  virtual std::string toString();
 };
 
 class ExpressionStatement : public Statement {
 public:
   Expression expression;
-  
-  std::string toString() {
-    std::ostringstream out;
-    
-    out << "hi";
-    
-    return out.str();
-  }
+  ExpressionStatement(Expression &expression);
+  virtual std::string toString();
 };
 
 class BlockStatement : public Statement {
 public:
-  std::vector<Statement*> statements;
-  
-  std::string toString() {
-    std::ostringstream out;
-    
-    out << "hi";
-    
-    return out.str();
-  }
+  std::vector<Statement> statements;
+  BlockStatement(std::vector<Statement> statements);
+  virtual std::string toString();
 };
 
 
@@ -97,12 +106,12 @@ class UnaryExpression : public Expression {
 public:
   std::string oper;
   Expression inner;
-  
-  std::string toString() {
+
+  virtual std::string toString() {
     std::ostringstream out;
-    
+
     out << "hi";
-    
+
     return out.str();
   }
 };
@@ -112,12 +121,12 @@ public:
   std::string oper;
   Expression left;
   Expression right;
-  
-  std::string toString() {
+
+  virtual std::string toString() {
     std::ostringstream out;
-    
+
     out << "hi";
-    
+
     return out.str();
   }
 };
@@ -127,26 +136,26 @@ public:
   Expression *condition;
   BlockStatement *thenStatement;
   BlockStatement *elseStatement;
-  
-  std::string toString() {
+
+  virtual std::string toString() {
     std::ostringstream out;
-    
+
     out << "hi";
-    
+
     return out.str();
   }
 };
 
 class FunctionExpression : public Expression {
 public:
-  std::vector<std::unique_ptr<Identifier>> parameters;
+  std::vector<Identifier> parameters;
   BlockStatement bodyStatement;
-  
-  std::string toString() {
+
+  virtual std::string toString() {
     std::ostringstream out;
-    
+
     out << "hi";
-    
+
     return out.str();
   }
 };
@@ -154,13 +163,13 @@ public:
 class CallExpression : public Expression {
 public:
   Expression target;
-  std::vector<std::unique_ptr<Expression>> arguments;
-  
-  std::string toString() {
+  std::vector<Expression> arguments;
+
+  virtual std::string toString() {
     std::ostringstream out;
-    
+
     out << "hi";
-    
+
     return out.str();
   }
 };
@@ -169,16 +178,22 @@ class IndexExpression : public Expression {
 public:
   Expression target;
   Expression index;
-  
-  std::string toString() {
+
+  virtual std::string toString() {
     std::ostringstream out;
-    
+
     out << "hi";
-    
+
     return out.str();
   }
 };
 
+class LiteralExpression : public Expression {
+public:
+  Literal literal;
+  LiteralExpression(Literal &literal);
+  virtual std::string toString();
+};
 
 
 
@@ -188,12 +203,12 @@ public:
 class IntegerLiteral : public Literal {
 public:
   int64_t value;
-  
-  std::string toString() {
+
+  virtual std::string toString() {
     std::ostringstream out;
-    
+
     out << "hi";
-    
+
     return out.str();
   }
 };
@@ -201,65 +216,32 @@ public:
 class BooleanLiteral : public Literal {
 public:
   bool value;
-  
-  std::string toString() {
-    std::ostringstream out;
-    
-    out << "hi";
-    
-    return out.str();
-  }
+
+  virtual std::string toString();
 };
 
 class StringLiteral : public Literal {
 public:
   std::string value;
-  
-  std::string toString() {
-    std::ostringstream out;
-    
-    out << "hi";
-    
-    return out.str();
-  }
+  virtual std::string toString();
 };
+
 class ArrayLiteral : public Literal {
 public:
   std::vector<Expression> elements;
-  
-  std::string toString() {
-    std::ostringstream out;
-    
-    out << "hi";
-    
-    return out.str();
-  }
+  virtual std::string toString();
 };
 
-class HashMember {
+class HashMemberNode : public Node {
 public:
   int64_t hash;
   Expression key;
   Expression value;
-  
-  std::string toString() {
-    std::ostringstream out;
-    
-    out << "hi";
-    
-    return out.str();
-  }
+  virtual std::string toString();
 };
 
 class HashMapLiteral : public Literal {
 public:
-  std::vector<std::unique_ptr<HashMember>> members;
-  
-  std::string toString() {
-    std::ostringstream out;
-    
-    out << "hi";
-    
-    return out.str();
-  }
+  std::vector<HashMemberNode> members;
+  virtual std::string toString();
 };
